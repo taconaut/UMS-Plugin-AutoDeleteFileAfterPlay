@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>github.com.taconaut</groupId>
 	<artifactId>autodeletefileafterplay</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>AutoDeleteFileAfterPlay</name>
 	<description>This UMS plugin deletes files after they have been played on a renderer</description>
 
