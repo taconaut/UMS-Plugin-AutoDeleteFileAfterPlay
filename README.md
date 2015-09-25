@@ -10,6 +10,9 @@ This plugin for Universal Media Server will automatically delete a file after ha
 
 All done :sunglasses:
 
+Following properties can be set in the plugin configuration:<br>
+![AutoDeleteFileAfterPlay configuration](http://i.imgur.com/AB6xjab.png)
+
 If you use UMS in headless mode, you can configure the settings in the properties file located in<br>
 `<profile_directory>\plugins\AutoDeleteFileAfterPlay\configuration.properties`.<br>
 The default configuration contains following:
