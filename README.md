@@ -28,9 +28,8 @@ The plugin has a maven dependency onto ums; as it isn't hosted in a maven reposi
     mvn install
     
     cd ..
-    cd UMS-Plugin-AutoDeleteFileAfterPlay
     git clone https://github.com/taconaut/UMS-Plugin-AutoDeleteFileAfterPlay.git
-    cd AutoDeleteFileAfterPlay
+    cd UMS-Plugin-AutoDeleteFileAfterPlay
     mvn package
     
 Make sure the current version of ums is correctly referenced in the pom.xml of the plugin:
