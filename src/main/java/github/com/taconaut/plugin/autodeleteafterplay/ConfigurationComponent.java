@@ -105,7 +105,7 @@ public class ConfigurationComponent extends JComponent {
 	 */
 	private void build() {
 		// Set basic layout
-		FormLayout layout = new FormLayout("5px, p, 5px, f:300:g, 5px, p, 5px", //columns
+		FormLayout layout = new FormLayout("5px, p, 5px, f:400:g, 5px, p, 5px", //columns
 				"5px, p, 5px, p, 5px, p, 5px"); //rows
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.opaque(true);
