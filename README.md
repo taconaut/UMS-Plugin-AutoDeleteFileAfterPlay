@@ -24,7 +24,7 @@ The default configuration contains following:
     moveToRecycleBin=true
 
 ## Compiling the plugin
-The plugin has a maven dependency onto ums; as it isn't hosted in a maven repository, it has to be installed in the local repository by dowing following:
+The plugin has a maven dependency onto UMS; as it isn't hosted in a maven repository, it has to be installed in the local repository by doing following:
 
     git clone https://github.com/UniversalMediaServer/UniversalMediaServer.git
     cd UniversalMediaServer
