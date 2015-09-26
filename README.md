@@ -1,5 +1,5 @@
 # UMS-Plugin: Auto-delete after play
-This plugin for Universal Media Server (UMS) will automatically delete a file after having played it.
+This plugin for Universal Media Server (UMS) will automatically delete a file after having been played.
 
 ##Using the plugin
 1. Download it from [SourceForge](https://sourceforge.net/projects/ums-mlx/files/ums-plugins/AutoDeleteFileAfterPlay/)
@@ -38,7 +38,7 @@ Then you can build the plugin:
     cd UMS-Plugin-AutoDeleteFileAfterPlay
     mvn package
     
-Make sure the version of UMS you just installed is correctly referenced in the pom.xml of the plugin:
+Make sure the version of UMS you've just installed is correctly referenced in the pom.xml of the plugin:
 
 		<dependency>
 			<groupId>net.pms</groupId>
