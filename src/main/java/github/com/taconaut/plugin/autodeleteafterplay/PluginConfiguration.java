@@ -16,16 +16,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds the configuration of the plugin.
  */
-public class PluginConfiguration  {
+public class PluginConfiguration {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginConfiguration.class);
-	
+
 	private final Properties properties = new Properties();
 	private final String configurationFilePath = Paths.get(PMS.getConfiguration().getProfileDirectory(), "plugins", "AutoDeleteFileAfterPlay", "configuration.properties").toString();
-	
+
 	private static final String KEY_PERCENT_PLAY_REQUIRED = "percentPlayedRequired";
 	private static final String KEY_AUTO_DELETE_FOLDER_PATHS = "autoDeleteFolderPaths";
 	private static final String KEY_MOVE_TO_RECYCLEBIN = "moveToRecycleBin";
-	
+
 	/**
 	 * Gets the configuration file path.
 	 *
@@ -34,7 +34,7 @@ public class PluginConfiguration  {
 	public String getConfigurationFilePath() {
 		return configurationFilePath;
 	}
-	
+
 	/**
 	 * Saves the properties to the specified file path.<br>
 	 * Sub-directories will be created automatically if needed
@@ -42,7 +42,7 @@ public class PluginConfiguration  {
 	 * @param propertiesFilePath the save file path
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void save() throws IOException {		
+	public void save() throws IOException {
 		LOGGER.debug(String.format("Saving configuration to '%s'", getConfigurationFilePath()));
 
 		// make sure the save directory exists
@@ -56,7 +56,7 @@ public class PluginConfiguration  {
 
 		FileOutputStream configStream = new FileOutputStream(getConfigurationFilePath());
 		properties.store(configStream, "");
-		
+
 		LOGGER.debug(String.format("Saved configuration to '%s'", getConfigurationFilePath()));
 	}
 
@@ -66,8 +66,8 @@ public class PluginConfiguration  {
 	 * @param propertiesFilePath the file to load the properties from
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void load() throws IOException {		
-		if(new File(getConfigurationFilePath()).exists()) {
+	public void load() throws IOException {
+		if (new File(getConfigurationFilePath()).exists()) {
 			LOGGER.debug(String.format("Restoring configuration from '%s'", getConfigurationFilePath()));
 			FileInputStream configStream = new FileInputStream(getConfigurationFilePath());
 			properties.load(configStream);
@@ -106,7 +106,7 @@ public class PluginConfiguration  {
 			} else if (defaultValue instanceof Boolean) {
 				return (T) (Boolean) Boolean.parseBoolean(value.toString());
 			} else if (defaultValue instanceof Enum) {
-				return (T) Enum.valueOf((Class)defaultValue.getClass(), value.toString());
+				return (T) Enum.valueOf((Class) defaultValue.getClass(), value.toString());
 			} else if (defaultValue.getClass().isAssignableFrom(value.getClass())) {
 				return (T) value;
 			}
@@ -137,7 +137,7 @@ public class PluginConfiguration  {
 	 *
 	 * @return the auto delete folder paths
 	 */
-	public String[] getAutoDeleteFolderPaths(){
+	public String[] getAutoDeleteFolderPaths() {
 		String autoDeleteFolderPathsString = getValue(KEY_AUTO_DELETE_FOLDER_PATHS, "");
 		return autoDeleteFolderPathsString.split(";");
 	}
@@ -147,7 +147,7 @@ public class PluginConfiguration  {
 	 *
 	 * @param autoDeleteFolderPaths the auto delete folder paths
 	 */
-	public void setAutoDeleteFolderPaths(String[] autoDeleteFolderPaths){
+	public void setAutoDeleteFolderPaths(String[] autoDeleteFolderPaths) {
 		setValue(KEY_AUTO_DELETE_FOLDER_PATHS, StringUtils.join(autoDeleteFolderPaths, ";"));
 	}
 

@@ -39,51 +39,59 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 			LOGGER.error("Failed to load global configuration", e);
 		}
 	}
-	
+
 	private static final int MAX_RETRY_DELETE = 10;
 	private static final int RETRY_DELETE_INTERVAL_MILLIS = 1000;
 
 	/** Cache used to keep track of files being played. */
 	private final Queue<QueueItem> playCache = new LinkedList<QueueItem>();
-	
+
 	private ConfigurationComponent configurationComponent;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.pms.external.ExternalListener#config()
 	 */
 	public JComponent config() {
-		if(configurationComponent == null) {
+		if (configurationComponent == null) {
 			// Lazy-initialize the configuration panel
 			configurationComponent = new ConfigurationComponent(CONFIGURATION);
 		}
 		return configurationComponent;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.pms.external.ExternalListener#name()
 	 */
 	public String name() {
 		return MESSAGES.getString("PluginName");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.pms.external.ExternalListener#shutdown()
 	 */
 	public void shutdown() {
 		playCache.clear();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.pms.external.StartStopListener#donePlaying(net.pms.dlna.DLNAMediaInfo, net.pms.dlna.DLNAResource)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.pms.external.StartStopListener#donePlaying(net.pms.dlna.DLNAMediaInfo , net.pms.dlna.DLNAResource)
 	 */
 	public synchronized void donePlaying(DLNAMediaInfo media, DLNAResource resource) {
 		LOGGER.debug("Done playing " + resource.getName());
-		
-		if(!(resource instanceof RealFile)) {
+
+		if (!(resource instanceof RealFile)) {
 			LOGGER.debug("The DLNAResource isn't a real file and can't be deleted");
 			return;
 		}
-		
+
 		RealFile realFile = (RealFile) resource;
 
 		int playLengthSec = 0;
@@ -104,9 +112,9 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 		if (playLengthSec > 0) {
 			String filePath = realFile.getFile().getAbsolutePath();
 			int fullLengthSec = (int) media.getDurationInSeconds();
-			int minPlayDeleteLength = (int) (fullLengthSec * ((double)CONFIGURATION.getPercentPlayedRequired() / 100));
+			int minPlayDeleteLength = (int) (fullLengthSec * ((double) CONFIGURATION.getPercentPlayedRequired() / 100));
 			LOGGER.debug(String.format("Stopped playing file '%s' after %s seconds. Min play length for deleting is %ss",
-							filePath, playLengthSec, minPlayDeleteLength));
+					filePath, playLengthSec, minPlayDeleteLength));
 
 			// Check if the file has been played long enough to delete it
 			if (playLengthSec > minPlayDeleteLength) {
@@ -122,8 +130,8 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 							break;
 						}
 					}
-					if(!deleteFile) {
-						LOGGER.debug(String.format("The file '%s' won't be deleted because it is not part of the defined folders (%s)", 
+					if (!deleteFile) {
+						LOGGER.debug(String.format("The file '%s' won't be deleted because it is not part of the defined folders (%s)",
 								filePath, StringUtils.join(autoDeleteFolderPaths, ";")));
 					}
 				} else {
@@ -133,9 +141,9 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 				if (deleteFile) {
 					boolean deleteSuccess = false;
 					IOException lastDeleteException = null;
-					for(int nbRetries = 0; nbRetries < MAX_RETRY_DELETE; nbRetries++) {
+					for (int nbRetries = 0; nbRetries < MAX_RETRY_DELETE; nbRetries++) {
 						try {
-							if(CONFIGURATION.isMoveToRecycleBin()){
+							if (CONFIGURATION.isMoveToRecycleBin()) {
 								FileUtils.getInstance().moveToTrash(Arrays.array(new File(filePath)));
 							} else {
 								new File(filePath).delete();
@@ -144,7 +152,7 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 							break;
 						} catch (IOException ex) {
 							lastDeleteException = ex;
-							
+
 							try {
 								Thread.sleep(RETRY_DELETE_INTERVAL_MILLIS);
 							} catch (InterruptedException e) {
@@ -152,9 +160,9 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 							}
 						}
 					}
-					
-					if(deleteSuccess){
-						if(CONFIGURATION.isMoveToRecycleBin()){
+
+					if (deleteSuccess) {
+						if (CONFIGURATION.isMoveToRecycleBin()) {
 							LOGGER.info(String.format("Moved file '%s' to the recycle bin after having played it for %s seconds. Minimum play length for deleting is %s seconds (%s%%)",
 									filePath, playLengthSec, minPlayDeleteLength, CONFIGURATION.getPercentPlayedRequired()));
 						} else {
@@ -162,8 +170,8 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 									filePath, playLengthSec, minPlayDeleteLength, CONFIGURATION.getPercentPlayedRequired()));
 						}
 					} else {
-						if(CONFIGURATION.isMoveToRecycleBin()){
-							LOGGER.warn(String.format("Failed to move file '%s' to the recycle bin after %s retries", filePath, MAX_RETRY_DELETE), lastDeleteException);					
+						if (CONFIGURATION.isMoveToRecycleBin()) {
+							LOGGER.warn(String.format("Failed to move file '%s' to the recycle bin after %s retries", filePath, MAX_RETRY_DELETE), lastDeleteException);
 						} else {
 							LOGGER.warn(String.format("Failed to permanently delete file '%s' after %s retries", filePath, MAX_RETRY_DELETE), lastDeleteException);
 						}
@@ -173,7 +181,9 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.pms.external.StartStopListener#nowPlaying(net.pms.dlna.DLNAMediaInfo, net.pms.dlna.DLNAResource)
 	 */
 	public synchronized void nowPlaying(DLNAMediaInfo media, DLNAResource resource) {

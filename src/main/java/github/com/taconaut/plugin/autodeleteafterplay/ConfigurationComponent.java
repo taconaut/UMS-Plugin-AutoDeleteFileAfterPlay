@@ -6,18 +6,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JComponent;
-import javax.swing.JSpinner;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.pms.newgui.components.CustomJCheckBox;
-import net.pms.newgui.components.CustomJTextField;
+import net.pms.newgui.components.*;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -29,13 +24,13 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ConfigurationComponent extends JComponent {
 	private static final long serialVersionUID = -404029004613557444L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationComponent.class);
-	
+
 	private PluginConfiguration configuration;
-	
-	private JSpinner sPercentPlayedRequired;
+
+	private CustomJSpinner sPercentPlayedRequired;
 	private CustomJTextField tfAutoDeleteFolderPaths;
 	private CustomJCheckBox cbMoveToRecycleBin;
-	
+
 	/**
 	 * The Constructor.
 	 *
@@ -43,7 +38,7 @@ public class ConfigurationComponent extends JComponent {
 	 */
 	public ConfigurationComponent(PluginConfiguration configuration) {
 		this.configuration = configuration;
-		
+
 		initialize();
 		build();
 	}
@@ -53,11 +48,11 @@ public class ConfigurationComponent extends JComponent {
 	 */
 	private void initialize() {
 		setLayout(new GridLayout());
-		
+
 		// Initialize PercentPlayedRequired
-		sPercentPlayedRequired = new JSpinner(new SpinnerIntModel(configuration.getPercentPlayedRequired(), 0, 100, 5));
+		sPercentPlayedRequired = new CustomJSpinner(new SpinnerIntModel(configuration.getPercentPlayedRequired(), 0, 100, 5), false);
 		sPercentPlayedRequired.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				updateAndSaveMinPlayPercent();
@@ -68,20 +63,20 @@ public class ConfigurationComponent extends JComponent {
 		// Initialize AutoDeleteFolderPaths
 		tfAutoDeleteFolderPaths = new CustomJTextField(StringUtils.join(configuration.getAutoDeleteFolderPaths(), ";"));
 		tfAutoDeleteFolderPaths.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				updateAndSaveAutoDeleteFolderPaths();
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				updateAndSaveAutoDeleteFolderPaths();
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				updateAndSaveAutoDeleteFolderPaths();				
+				updateAndSaveAutoDeleteFolderPaths();
 			}
 		});
 		tfAutoDeleteFolderPaths.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.tfAutoDeleteFolderPaths.ToolTip"));
@@ -89,7 +84,7 @@ public class ConfigurationComponent extends JComponent {
 		// Initialize MoveToRecycleBin
 		cbMoveToRecycleBin = new CustomJCheckBox(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbMoveToRecycleBin"));
 		cbMoveToRecycleBin.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				configuration.setMoveToRecycleBin(cbMoveToRecycleBin.isSelected());
@@ -105,43 +100,45 @@ public class ConfigurationComponent extends JComponent {
 	 */
 	private void build() {
 		// Set basic layout
-		FormLayout layout = new FormLayout("5px, p, 5px, f:400:g, 5px, p, 5px", //columns
-				"5px, p, 5px, p, 5px, p, 5px"); //rows
+		FormLayout layout = new FormLayout("5px, p, 5px, f:400:g, 5px, p, 5px", // columns
+				"5px, p, 5px, p, 5px, p, 5px"); // rows
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.opaque(true);
 
 		CellConstraints cc = new CellConstraints();
-		
-		builder.addLabel(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.lPercentPlayedRequired"), cc.xy(2, 2, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
+		builder.addLabel(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.lPercentPlayedRequired"),
+				cc.xy(2, 2, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		builder.add(sPercentPlayedRequired, cc.xy(4, 2));
 		builder.addLabel("%", cc.xy(6, 2));
 
-		builder.addLabel(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.lAutoDeleteFolderPaths"), cc.xy(2, 4, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		builder.addLabel(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.lAutoDeleteFolderPaths"),
+				cc.xy(2, 4, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		builder.add(tfAutoDeleteFolderPaths, cc.xyw(4, 4, 3));
-		
+
 		builder.add(cbMoveToRecycleBin, cc.xyw(2, 6, 5));
-		
+
 		add(builder.getPanel());
 	}
-	
+
 	/**
 	 * Updates and saves the auto delete folder paths.
 	 */
-	private void updateAndSaveAutoDeleteFolderPaths(){
+	private void updateAndSaveAutoDeleteFolderPaths() {
 		String[] autoDeleteFolderPaths = tfAutoDeleteFolderPaths.getText().split(";");
 		configuration.setAutoDeleteFolderPaths(autoDeleteFolderPaths);
 		trySaveConfiguration();
 	}
-	
+
 	/**
 	 * Updates and saves minimum play percent.
 	 */
-	private void updateAndSaveMinPlayPercent(){
+	private void updateAndSaveMinPlayPercent() {
 		int percentPlayedRequired = (int) sPercentPlayedRequired.getValue();
 		configuration.setPercentPlayedRequired(percentPlayedRequired);
 		trySaveConfiguration();
 	}
-	
+
 	/**
 	 * Tries to save the configuration.
 	 *
