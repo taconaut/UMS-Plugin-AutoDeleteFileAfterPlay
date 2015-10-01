@@ -40,7 +40,7 @@
 								<artifactItem>
 									<groupId>net.java.dev.jna</groupId>
 									<artifactId>jna-platform</artifactId>
-									<version>4.1.0</version>
+									<version>4.2.0</version>
 								</artifactItem>
 							</artifactItems>
 							<includeArtifactIds>jna-platform</includeArtifactIds>
