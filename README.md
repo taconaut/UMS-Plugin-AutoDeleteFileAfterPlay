@@ -26,7 +26,7 @@ The default configuration contains following:
     isDeleteAudio=false
     isDeleteImage=false
 
-**Note**: File paths have to be escapte when setting `autoDeleteFolderPaths`. E.g. `C:\video_tmp` becomes `C\:\\video_tmp`
+**Note**: File paths have to be escaped when setting `autoDeleteFolderPaths`. E.g. `C:\video_tmp` becomes `C\:\\video_tmp`
 
 ## Compiling the plugin
 The plugin has a maven dependency onto UMS; as it isn't hosted in a maven repository, it has to be installed in the local repository by doing following:
