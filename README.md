@@ -11,7 +11,7 @@ This plugin for Universal Media Server (UMS) will automatically delete a file af
 All done :sunglasses:
 
 Following properties can be set in the plugin configuration:<br>
-![AutoDeleteFileAfterPlay configuration](http://i.imgur.com/AB6xjab.png)
+![AutoDeleteFileAfterPlay configuration](http://i.imgur.com/kW6RU3w.png)
 
 If you use UMS in headless mode, you can configure the settings in the properties file located in<br>
 `<profile_directory>\plugins\AutoDeleteFileAfterPlay\configuration.properties`<br>
@@ -22,6 +22,9 @@ The default configuration contains following:
     percentPlayedRequired=80
     autoDeleteFolderPaths=
     moveToRecycleBin=true
+    isDeleteVideo=true
+    isDeleteAudio=false
+    isDeleteImage=false
 
 ## Compiling the plugin
 The plugin has a maven dependency onto UMS; as it isn't hosted in a maven repository, it has to be installed in the local repository by doing following:
@@ -43,5 +46,5 @@ Make sure the version of UMS you've just installed is correctly referenced in th
 		<dependency>
 			<groupId>net.pms</groupId>
 			<artifactId>ums</artifactId>
-			<version>5.2.3-SNAPSHOT</version>
+			<version>5.2.4-SNAPSHOT</version>
 		</dependency>
