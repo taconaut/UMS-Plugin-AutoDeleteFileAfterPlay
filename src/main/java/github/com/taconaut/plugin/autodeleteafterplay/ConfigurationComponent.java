@@ -6,17 +6,23 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JComponent;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.pms.newgui.components.*;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import net.pms.newgui.components.CustomJCheckBox;
+import net.pms.newgui.components.CustomJSpinner;
+import net.pms.newgui.components.CustomJTextField;
+import net.pms.newgui.components.SpinnerIntModel;
 
 /**
  * Swing component used to configure the plugin properties.
@@ -35,18 +41,20 @@ public class ConfigurationComponent extends JComponent {
 	 * The Constructor.
 	 *
 	 * @param configuration the plugin configuration
+	 * @param canMoveToRecycleBin 
 	 */
-	public ConfigurationComponent(PluginConfiguration configuration) {
+	public ConfigurationComponent(PluginConfiguration configuration, boolean canMoveToRecycleBin) {
 		this.configuration = configuration;
 
-		initialize();
+		initialize(canMoveToRecycleBin);
 		build();
 	}
 
 	/**
 	 * Initializes the required components.
+	 * @param canMoveToRecycleBin 
 	 */
-	private void initialize() {
+	private void initialize(boolean canMoveToRecycleBin) {
 		setLayout(new GridLayout());
 
 		// Initialize PercentPlayedRequired
@@ -83,16 +91,26 @@ public class ConfigurationComponent extends JComponent {
 
 		// Initialize MoveToRecycleBin
 		cbMoveToRecycleBin = new CustomJCheckBox(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbMoveToRecycleBin"));
-		cbMoveToRecycleBin.addActionListener(new ActionListener() {
+		if (canMoveToRecycleBin) {
+			cbMoveToRecycleBin.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				configuration.setMoveToRecycleBin(cbMoveToRecycleBin.isSelected());
-				trySaveConfiguration();
-			}
-		});
-		cbMoveToRecycleBin.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbMoveToRecycleBin.ToolTip"));
-		cbMoveToRecycleBin.setSelected(configuration.isMoveToRecycleBin());
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					configuration.setMoveToRecycleBin(cbMoveToRecycleBin.isSelected());
+					trySaveConfiguration();
+				}
+			});
+			cbMoveToRecycleBin.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbMoveToRecycleBin.ToolTip"));
+			cbMoveToRecycleBin.setSelected(configuration.isMoveToRecycleBin());
+		} else {
+			// Update GUI (disable move to recycle bin functionality)
+			cbMoveToRecycleBin.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbMoveToRecycleBin.Disabled.ToolTip"));
+			cbMoveToRecycleBin.setSelected(false);
+			cbMoveToRecycleBin.setEnabled(false);
+
+			// Make sure configuration is up to date
+			configuration.setMoveToRecycleBin(false);
+		}
 	}
 
 	/**

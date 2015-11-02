@@ -27,6 +27,8 @@ import net.pms.external.StartStopListener;
 public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutoDeleteFileAfterPlayPlugin.class);
 
+	private static FileUtils fileUtils = FileUtils.getInstance();
+
 	/** Resource file used by the plugin **/
 	protected static final ResourceBundle MESSAGES = ResourceBundle.getBundle("autodeleteafterplay-i18n.messages");
 
@@ -56,7 +58,7 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 	public JComponent config() {
 		if (configurationComponent == null) {
 			// Lazy-initialize the configuration panel
-			configurationComponent = new ConfigurationComponent(CONFIGURATION);
+			configurationComponent = new ConfigurationComponent(CONFIGURATION, fileUtils.hasTrash());
 		}
 		return configurationComponent;
 	}
@@ -143,8 +145,8 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 					IOException lastDeleteException = null;
 					for (int nbRetries = 0; nbRetries < MAX_RETRY_DELETE; nbRetries++) {
 						try {
-							if (CONFIGURATION.isMoveToRecycleBin()) {
-								FileUtils.getInstance().moveToTrash(Arrays.array(new File(filePath)));
+							if (CONFIGURATION.isMoveToRecycleBin() && fileUtils.hasTrash()) {
+								fileUtils.moveToTrash(Arrays.array(new File(filePath)));
 							} else {
 								new File(filePath).delete();
 							}
