@@ -1,11 +1,13 @@
 package github.com.taconaut.plugin.autodeleteafterplay;
 
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -19,6 +21,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import net.pms.newgui.GuiUtil;
 import net.pms.newgui.components.CustomJCheckBox;
 import net.pms.newgui.components.CustomJSpinner;
 import net.pms.newgui.components.CustomJTextField;
@@ -36,12 +39,15 @@ public class ConfigurationComponent extends JComponent {
 	private CustomJSpinner sPercentPlayedRequired;
 	private CustomJTextField tfAutoDeleteFolderPaths;
 	private CustomJCheckBox cbMoveToRecycleBin;
+	private CustomJCheckBox cbDeleteVideo;
+	private CustomJCheckBox cbDeleteAudio;
+	private CustomJCheckBox cbDeleteImage;
 
 	/**
 	 * The Constructor.
 	 *
 	 * @param configuration the plugin configuration
-	 * @param canMoveToRecycleBin 
+	 * @param canMoveToRecycleBin specifies if files can be moved to the recycle bin
 	 */
 	public ConfigurationComponent(PluginConfiguration configuration, boolean canMoveToRecycleBin) {
 		this.configuration = configuration;
@@ -52,7 +58,8 @@ public class ConfigurationComponent extends JComponent {
 
 	/**
 	 * Initializes the required components.
-	 * @param canMoveToRecycleBin 
+	 * 
+	 * @param canMoveToRecycleBin
 	 */
 	private void initialize(boolean canMoveToRecycleBin) {
 		setLayout(new GridLayout());
@@ -111,6 +118,42 @@ public class ConfigurationComponent extends JComponent {
 			// Make sure configuration is up to date
 			configuration.setMoveToRecycleBin(false);
 		}
+
+		cbDeleteVideo = new CustomJCheckBox(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteVideo"));
+		cbDeleteVideo.setSelected(configuration.isDeleteVideo());
+		cbDeleteVideo.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteVideo.ToolTip"));
+		cbDeleteVideo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				configuration.setDeleteVideo(cbDeleteVideo.isSelected());
+				trySaveConfiguration();
+			}
+		});
+
+		cbDeleteAudio = new CustomJCheckBox(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteAudio"));
+		cbDeleteAudio.setSelected(configuration.isDeleteAudio());
+		cbDeleteAudio.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteAudio.ToolTip"));
+		cbDeleteAudio.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				configuration.setDeleteAudio(cbDeleteAudio.isSelected());
+				trySaveConfiguration();
+			}
+		});
+
+		cbDeleteImage = new CustomJCheckBox(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteImage"));
+		cbDeleteImage.setSelected(configuration.isDeleteImage());
+		cbDeleteImage.setToolTipText(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.cbDeleteImage.ToolTip"));
+		cbDeleteImage.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				configuration.setDeleteImage(cbDeleteImage.isSelected());
+				trySaveConfiguration();
+			}
+		});
 	}
 
 	/**
@@ -119,7 +162,7 @@ public class ConfigurationComponent extends JComponent {
 	private void build() {
 		// Set basic layout
 		FormLayout layout = new FormLayout("5px, p, 5px, f:400:g, 5px, p, 5px", // columns
-				"5px, p, 5px, p, 5px, p, 5px"); // rows
+				"5px, p, 5px, p, 5px, p, 5px, p, 5px"); // rows
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.opaque(true);
 
@@ -134,7 +177,15 @@ public class ConfigurationComponent extends JComponent {
 				cc.xy(2, 4, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		builder.add(tfAutoDeleteFolderPaths, cc.xyw(4, 4, 3));
 
-		builder.add(cbMoveToRecycleBin, cc.xyw(2, 6, 5));
+		builder.addLabel(AutoDeleteFileAfterPlayPlugin.MESSAGES.getString("ConfigurationComponent.lDeleteFileTypes"),
+				cc.xy(2, 6, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		JPanel pFileTypes = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		pFileTypes.add(cbDeleteVideo);
+		pFileTypes.add(cbDeleteAudio);
+		pFileTypes.add(cbDeleteImage);
+		builder.add(pFileTypes, cc.xyw(4, 6, 3));
+
+		builder.add(GuiUtil.getPreferredSizeComponent(cbMoveToRecycleBin), cc.xyw(2, 8, 5));
 
 		add(builder.getPanel());
 	}

@@ -33,6 +33,7 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 	protected static final ResourceBundle MESSAGES = ResourceBundle.getBundle("autodeleteafterplay-i18n.messages");
 
 	private static final PluginConfiguration CONFIGURATION;
+
 	static {
 		CONFIGURATION = new PluginConfiguration();
 		try {
@@ -87,6 +88,13 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 	 * @see net.pms.external.StartStopListener#donePlaying(net.pms.dlna.DLNAMediaInfo , net.pms.dlna.DLNAResource)
 	 */
 	public synchronized void donePlaying(DLNAMediaInfo media, DLNAResource resource) {
+		if ((resource.getMedia().isVideo() && !CONFIGURATION.isDeleteVideo()) ||
+				(resource.getMedia().isAudio() && !CONFIGURATION.isDeleteAudio()) ||
+				(resource.getMedia().isImage() && !CONFIGURATION.isDeleteImage())) {
+			// Only handle plays for configured file types
+			return;
+		}
+
 		LOGGER.debug("Done playing " + resource.getName());
 
 		if (!(resource instanceof RealFile)) {
@@ -114,12 +122,12 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 		if (playLengthSec > 0) {
 			String filePath = realFile.getFile().getAbsolutePath();
 			int fullLengthSec = (int) media.getDurationInSeconds();
-			int minPlayDeleteLength = (int) (fullLengthSec * ((double) CONFIGURATION.getPercentPlayedRequired() / 100));
-			LOGGER.debug(String.format("Stopped playing file '%s' after %s seconds. Min play length for deleting is %ss",
-					filePath, playLengthSec, minPlayDeleteLength));
+			int minPlayDeleteLengthSec = (int) (fullLengthSec * ((double) CONFIGURATION.getPercentPlayedRequired() / 100));
+			LOGGER.debug(String.format("Stopped playing file '%s' after %s seconds. Min play length for deleting is %s seconds (%s%% of %s seconds)",
+					filePath, playLengthSec, minPlayDeleteLengthSec, CONFIGURATION.getPercentPlayedRequired(), fullLengthSec));
 
 			// Check if the file has been played long enough to delete it
-			if (playLengthSec > minPlayDeleteLength) {
+			if (playLengthSec > minPlayDeleteLengthSec) {
 				// Delete file if
 				// 1) it is contained in a folder which auto deletes files
 				// 2) no folders have been specified
@@ -165,11 +173,11 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 
 					if (deleteSuccess) {
 						if (CONFIGURATION.isMoveToRecycleBin()) {
-							LOGGER.info(String.format("Moved file '%s' to the recycle bin after having played it for %s seconds. Minimum play length for deleting is %s seconds (%s%%)",
-									filePath, playLengthSec, minPlayDeleteLength, CONFIGURATION.getPercentPlayedRequired()));
+							LOGGER.info(String.format("Moved file '%s' to the recycle bin after having played it for %s seconds. Minimum play length for deleting is %s seconds (%s%% of %s seconds)",
+									filePath, playLengthSec, minPlayDeleteLengthSec, CONFIGURATION.getPercentPlayedRequired(), fullLengthSec));
 						} else {
-							LOGGER.info(String.format("Permanently deleted file '%s' after having played it for %s seconds. Minimum play length for deleting is %s seconds (%s%%)",
-									filePath, playLengthSec, minPlayDeleteLength, CONFIGURATION.getPercentPlayedRequired()));
+							LOGGER.info(String.format("Permanently deleted file '%s' after having played it for %s seconds. Minimum play length for deleting is %s seconds (%s%% of %s seconds)",
+									filePath, playLengthSec, minPlayDeleteLengthSec, CONFIGURATION.getPercentPlayedRequired(), fullLengthSec));
 						}
 					} else {
 						if (CONFIGURATION.isMoveToRecycleBin()) {
@@ -189,6 +197,13 @@ public class AutoDeleteFileAfterPlayPlugin implements StartStopListener {
 	 * @see net.pms.external.StartStopListener#nowPlaying(net.pms.dlna.DLNAMediaInfo, net.pms.dlna.DLNAResource)
 	 */
 	public synchronized void nowPlaying(DLNAMediaInfo media, DLNAResource resource) {
+		if ((resource.getMedia().isVideo() && !CONFIGURATION.isDeleteVideo()) ||
+				(resource.getMedia().isAudio() && !CONFIGURATION.isDeleteAudio()) ||
+				(resource.getMedia().isImage() && !CONFIGURATION.isDeleteImage())) {
+			// Only handle plays for configured file types
+			return;
+		}
+
 		LOGGER.debug(String.format("Started playing %s", resource.getName()));
 		playCache.add(new QueueItem(resource.getInternalId(), new Date()));
 	}

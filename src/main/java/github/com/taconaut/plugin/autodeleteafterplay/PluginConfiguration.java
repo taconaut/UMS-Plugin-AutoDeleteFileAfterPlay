@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import net.pms.PMS;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.pms.PMS;
 
 /**
  * Holds the configuration of the plugin.
@@ -25,6 +25,9 @@ public class PluginConfiguration {
 	private static final String KEY_PERCENT_PLAY_REQUIRED = "percentPlayedRequired";
 	private static final String KEY_AUTO_DELETE_FOLDER_PATHS = "autoDeleteFolderPaths";
 	private static final String KEY_MOVE_TO_RECYCLEBIN = "moveToRecycleBin";
+	private static final String KEY_DELETE_VIDEO = "isDeleteVideo";
+	private static final String KEY_DELETE_AUDIO = "isDeleteAudio";
+	private static final String KEY_DELETE_IMAGE = "isDeleteImage";
 
 	/**
 	 * Gets the configuration file path.
@@ -167,5 +170,59 @@ public class PluginConfiguration {
 	 */
 	public void setMoveToRecycleBin(boolean moveToRecycleBin) {
 		setValue(KEY_MOVE_TO_RECYCLEBIN, moveToRecycleBin);
+	}
+
+	/**
+	 * Gets a value indicating if video files should be deleted.
+	 *
+	 * @return true, if video files should be deleted
+	 */
+	public boolean isDeleteVideo() {
+		return getValue(KEY_DELETE_VIDEO, true);
+	}
+
+	/**
+	 * Sets a value indicating if video files should be deleted.
+	 *
+	 * @param isDeleteVideo true, if video files should be deleted; otherwise false
+	 */
+	public void setDeleteVideo(boolean isDeleteVideo) {
+		setValue(KEY_DELETE_VIDEO, isDeleteVideo);
+	}
+
+	/**
+	 * Gets a value indicating if audio files should be deleted.
+	 *
+	 * @return true, if audio files should be deleted
+	 */
+	public boolean isDeleteAudio() {
+		return getValue(KEY_DELETE_AUDIO, false);
+	}
+
+	/**
+	 * Sets a value indicating if audio files should be deleted.
+	 *
+	 * @param isDeleteAudio true, if audio files should be deleted; otherwise false
+	 */
+	public void setDeleteAudio(boolean isDeleteAudio) {
+		setValue(KEY_DELETE_AUDIO, isDeleteAudio);
+	}
+
+	/**
+	 * Gets a value indicating if image files should be deleted.
+	 *
+	 * @return true, if image files should be deleted
+	 */
+	public boolean isDeleteImage() {
+		return getValue(KEY_DELETE_IMAGE, false);
+	}
+
+	/**
+	 * Sets a value indicating if image files should be deleted.
+	 *
+	 * @param isDeleteImage true, if image files should be deleted; otherwise false
+	 */
+	public void setDeleteImage(boolean isDeleteImage) {
+		setValue(KEY_DELETE_IMAGE, isDeleteImage);
 	}
 }
